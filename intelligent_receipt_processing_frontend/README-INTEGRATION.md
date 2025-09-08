@@ -7,7 +7,7 @@ This React app provides a responsive UI for:
 - Searching documents
 - Managing versions
 - Monitoring processing jobs
-- Admin dashboard for stats and users
+- Admin dashboard for monitoring
 
 ## Environment variables
 Create a .env file at the project root with:
@@ -15,20 +15,19 @@ Create a .env file at the project root with:
 
 See .env.example for reference.
 
-## Backend API endpoints expected
+## Backend API endpoints expected (aligned with provided OpenAPI)
 These pages call these endpoints (adjust in src/services/api.js if your backend differs):
-- POST /auth/login
-- GET /auth/me
-- POST /documents/upload (multipart/form-data: file + metadata)
-- GET /documents?page=&q=
+- POST /auth/login (returns { access_token })
+- POST /documents (multipart/form-data: file + title [required], optional: description, tags)
+- GET /documents?q=&page=
 - GET /documents/:id
 - GET /documents/:id/versions
 - GET /documents/:id/versions/:versionId
-- GET /search?query...
+- GET /search?q=&category=&tag=&limit=&offset=
 - GET /jobs?status=&page=
 - GET /jobs/:id
-- GET /admin/stats
-- GET /admin/users
+- GET /admin/documents (admin token)
+- GET /admin/jobs (admin token)
 
 If endpoints change, update src/services/api.js accordingly.
 

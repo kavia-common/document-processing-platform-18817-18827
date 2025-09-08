@@ -26,6 +26,7 @@ export default function UploadPage() {
     setError('');
     try {
       const promises = selectedFiles.map(async (file) => {
+        // Map UI fields to API metadata. Title is derived in api.uploadDocument.
         const meta = { category, vendor, note };
         const resp = await api.uploadDocument(file, meta);
         return { fileName: file.name, status: 'Uploaded', id: resp?.id, job_id: resp?.job_id };

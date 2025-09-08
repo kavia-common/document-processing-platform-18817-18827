@@ -4,13 +4,12 @@ import DocumentList from '../components/DocumentList';
 
 // PUBLIC_INTERFACE
 export default function SearchPage() {
-  /** Search across documents with filters. */
-  const [vendor, setVendor] = useState('');
+  /** Search across documents with filters (aligned to backend spec). */
+  const [q, setQ] = useState('');
   const [category, setCategory] = useState('');
-  const [minTotal, setMinTotal] = useState('');
-  const [maxTotal, setMaxTotal] = useState('');
-  const [from, setFrom] = useState('');
-  const [to, setTo] = useState('');
+  const [tag, setTag] = useState('');
+  const [limit, setLimit] = useState('');
+  const [offset, setOffset] = useState('');
   const [results, setResults] = useState([]);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
@@ -20,14 +19,13 @@ export default function SearchPage() {
     setErr('');
     try {
       const params = {};
-      if (vendor) params.vendor = vendor;
+      if (q) params.q = q;
       if (category) params.category = category;
-      if (minTotal) params.min_total = minTotal;
-      if (maxTotal) params.max_total = maxTotal;
-      if (from) params.from = from;
-      if (to) params.to = to;
-      const resp = await api.search(params);
-      setResults(resp?.items || resp?.data || []);
+      if (tag) params.tag = tag;
+      if (limit) params.limit = limit;
+      if (offset) params.offset = offset;
+      const items = await api.search(params);
+      setResults(items || []);
     } catch (e) {
       setErr(e?.message || 'Search failed');
     } finally {
@@ -38,35 +36,31 @@ export default function SearchPage() {
   return (
     <div className="row">
       <div className="card">
-        <div className="card-title">Advanced Search</div>
+        <div className="card-title">Search</div>
         <div className="form-row">
           <div>
-            <label className="label">Vendor</label>
-            <input className="input" value={vendor} onChange={e => setVendor(e.target.value)} />
+            <label className="label">Query</label>
+            <input className="input" value={q} onChange={e => setQ(e.target.value)} placeholder="keywords..." />
           </div>
           <div>
             <label className="label">Category</label>
-            <input className="input" value={category} onChange={e => setCategory(e.target.value)} />
+            <input className="input" value={category} onChange={e => setCategory(e.target.value)} placeholder="category" />
           </div>
         </div>
         <div className="form-row mt-16">
           <div>
-            <label className="label">Min Total</label>
-            <input className="input" type="number" value={minTotal} onChange={e => setMinTotal(e.target.value)} />
+            <label className="label">Tag</label>
+            <input className="input" value={tag} onChange={e => setTag(e.target.value)} placeholder="tag" />
           </div>
-          <div>
-            <label className="label">Max Total</label>
-            <input className="input" type="number" value={maxTotal} onChange={e => setMaxTotal(e.target.value)} />
-          </div>
-        </div>
-        <div className="form-row mt-16">
-          <div>
-            <label className="label">From</label>
-            <input className="input" type="date" value={from} onChange={e => setFrom(e.target.value)} />
-          </div>
-          <div>
-            <label className="label">To</label>
-            <input className="input" type="date" value={to} onChange={e => setTo(e.target.value)} />
+          <div className="form-row" style={{ gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div>
+              <label className="label">Limit</label>
+              <input className="input" type="number" value={limit} onChange={e => setLimit(e.target.value)} />
+            </div>
+            <div>
+              <label className="label">Offset</label>
+              <input className="input" type="number" value={offset} onChange={e => setOffset(e.target.value)} />
+            </div>
           </div>
         </div>
         <button className="btn primary mt-16" onClick={submit} disabled={busy}>{busy ? 'Searching…' : 'Search'}</button>

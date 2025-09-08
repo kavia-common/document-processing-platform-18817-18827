@@ -16,8 +16,8 @@ export default function DocumentsPage() {
     setLoading(true);
     setErr('');
     try {
-      const resp = await api.listDocuments(1, q);
-      setDocs(resp?.items || resp?.data || []);
+      const items = await api.listDocuments(1, q);
+      setDocs(items || []);
     } catch (e) {
       setErr(e?.message || 'Failed to load documents');
     } finally {
@@ -43,7 +43,7 @@ export default function DocumentsPage() {
         <div className="form-row mb-16">
           <div>
             <label className="label">Search</label>
-            <input className="input" placeholder="Search by vendor, amount, etc." value={q} onChange={e => setQ(e.target.value)} />
+            <input className="input" placeholder="Search by title, tags, etc." value={q} onChange={e => setQ(e.target.value)} />
           </div>
           <div style={{ alignSelf: 'end' }}>
             <button className="btn" onClick={load}>Search</button>

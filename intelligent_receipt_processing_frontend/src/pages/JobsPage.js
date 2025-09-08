@@ -14,8 +14,8 @@ export default function JobsPage() {
     setBusy(true);
     setErr('');
     try {
-      const resp = await api.listJobs(status, 1);
-      setJobs(resp?.items || resp?.data || []);
+      const items = await api.listJobs(status, 1);
+      setJobs(items || []);
     } catch (e) {
       setErr(e?.message || 'Failed to load jobs');
     } finally {
@@ -27,27 +27,27 @@ export default function JobsPage() {
 
   return (
     <div className="row">
-      <div className="card">
-        <div className="card-title">Job Monitor</div>
-        <div className="form-row">
-          <div>
-            <label className="label">Status</label>
-            <select className="select" value={status} onChange={e => setStatus(e.target.value)}>
-              <option value="">All</option>
-              <option value="queued">Queued</option>
-              <option value="processing">Processing</option>
-              <option value="completed">Completed</option>
-              <option value="failed">Failed</option>
-            </select>
-          </div>
-          <div style={{ alignSelf: 'end' }}>
-            <button className="btn" onClick={load} disabled={busy}>{busy ? 'Loading…' : 'Refresh'}</button>
+        <div className="card">
+          <div className="card-title">Job Monitor</div>
+          <div className="form-row">
+            <div>
+              <label className="label">Status</label>
+              <select className="select" value={status} onChange={e => setStatus(e.target.value)}>
+                <option value="">All</option>
+                <option value="queued">Queued</option>
+                <option value="processing">Processing</option>
+                <option value="completed">Completed</option>
+                <option value="failed">Failed</option>
+              </select>
+            </div>
+            <div style={{ alignSelf: 'end' }}>
+              <button className="btn" onClick={load} disabled={busy}>{busy ? 'Loading…' : 'Refresh'}</button>
+            </div>
           </div>
         </div>
-      </div>
 
-      <JobTable jobs={jobs} onSelect={() => {}} />
-      {err && <div className="btn danger mt-16" role="alert">{err}</div>}
+        <JobTable jobs={jobs} onSelect={() => {}} />
+        {err && <div className="btn danger mt-16" role="alert">{err}</div>}
     </div>
   );
 }

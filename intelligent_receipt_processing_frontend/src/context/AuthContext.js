@@ -16,26 +16,39 @@ export function AuthProvider({ children }) {
       setBootstrapped(true);
       return;
     }
-    api.me()
-      .then((me) => setUser(me))
-      .catch(() => {
-        localStorage.removeItem('auth_token');
-        setUser(null);
-      })
-      .finally(() => setBootstrapped(true));
+    // No /auth/me in spec; derive minimal profile from stored email if available
+    const email = localStorage.getItem('auth_email');
+    if (email) {
+      setUser({ email, name: email });
+      setBootstrapped(true);
+    } else {
+      // As a fallback, attempt to get a profile if backend provides such later
+      api.getProfile()
+        .then((me) => setUser(me || null))
+        .catch(() => {
+          localStorage.removeItem('auth_token');
+          setUser(null);
+        })
+        .finally(() => setBootstrapped(true));
+    }
   }, []);
 
   const login = async (email, password) => {
     const resp = await api.login(email, password);
-    if (resp?.token) {
-      localStorage.setItem('auth_token', resp.token);
+    const token = resp?.access_token || resp?.token;
+    if (token) {
+      localStorage.setItem('auth_token', token);
     }
-    setUser(resp?.user || { email, name: resp?.user?.name || email });
+    if (email) {
+      localStorage.setItem('auth_email', email);
+    }
+    setUser({ email, name: email || 'User' });
     return resp;
   };
 
   const logout = () => {
     localStorage.removeItem('auth_token');
+    localStorage.removeItem('auth_email');
     setUser(null);
   };
 
